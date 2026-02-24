@@ -1,0 +1,4 @@
+Objetivos:
+
+Aprender el funcionamiento del entorno de desarrollo que se va a usar durante todas las prácticas.
+Repasar y afianzar vuestros conocimientos de C.
