@@ -9,15 +9,6 @@
                 "name": "Out of Box Experience",
                 "resourceId": "/Out of Box Experience"
             }
-        },
-        {
-            "name": "practica02_holaMundo",
-            "type": "ccs-debug",
-            "request": "launch",
-            "projectInfo": {
-                "name": "practica02_holaMundo",
-                "resourceId": "/practica02_holaMundo"
-            }
         }
     ]
 }
