@@ -22,6 +22,33 @@
                     ]
                 }
             ]
+        },
+        {
+            "name": "led_rojo",
+            "type": "ccs-debug",
+            "request": "launch",
+            "projectInfo": {
+                "name": "led_rojo",
+                "resourceId": "/led_rojo"
+            }
+        },
+        {
+            "name": "led_verde",
+            "type": "ccs-debug",
+            "request": "launch",
+            "projectInfo": {
+                "name": "led_verde",
+                "resourceId": "/led_verde"
+            }
+        },
+        {
+            "name": "led_ambas",
+            "type": "ccs-debug",
+            "request": "launch",
+            "projectInfo": {
+                "name": "led_ambas",
+                "resourceId": "/led_ambas"
+            }
         }
     ]
 }
