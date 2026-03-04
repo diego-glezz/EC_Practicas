@@ -49,6 +49,15 @@
                 "name": "led_ambas",
                 "resourceId": "/led_ambas"
             }
+        },
+        {
+            "name": "boton_verde",
+            "type": "ccs-debug",
+            "request": "launch",
+            "projectInfo": {
+                "name": "boton_verde",
+                "resourceId": "/boton_verde"
+            }
         }
     ]
 }

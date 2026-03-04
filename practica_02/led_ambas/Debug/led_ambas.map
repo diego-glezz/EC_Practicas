@@ -1,7 +1,7 @@
 ******************************************************************************
                   MSP430 Linker PC v21.6.1                     
 ******************************************************************************
->> Linked Tue Mar  3 18:59:16 2026
+>> Linked Wed Mar  4 09:51:13 2026
 
 OUTPUT FILE NAME:   <led_ambas.out>
 ENTRY POINT SYMBOL: "_c_int00_noinit_noargs_mpu"  address: 00004400
@@ -245,12 +245,12 @@ MODULE SUMMARY
     +--+------------------+------+---------+---------+
        Total:             86     0         0      
                                                   
-    E:\ccs\ccs_base\msp430\lib\FR59xx\MSPMPU_INIT_LIB_CCS_msp430_large_code_restricted_data.lib
+    S:\software\electronica\ccstudio-20.2.0\ccs\ccs_base\msp430\lib\FR59xx\MSPMPU_INIT_LIB_CCS_msp430_large_code_restricted_data.lib
        mpu_init.o         44     0         0      
     +--+------------------+------+---------+---------+
        Total:             44     0         0      
                                                   
-    E:\ccs\tools\compiler\ti-cgt-msp430_21.6.1.LTS\lib\rts430x_lc_rd_eabi.lib
+    S:\software\electronica\ccstudio-20.2.0\ccs\tools\compiler\ti-cgt-msp430_21.6.1.LTS\lib\rts430x_lc_rd_eabi.lib
        boot.c.obj         24     2         0      
        isr_trap.asm.obj   8      0         0      
        exit.c.obj         6      0         0      
