@@ -26,7 +26,7 @@ int main(void) {
     P9OUT |= BIT7;
 
     while(1) {
-        if (P1IN & BIT1) rojo = (rojo == 1) ? 0 : 1;
+        if ((P1IN & BIT1) == 0) rojo = (rojo == 1) ? 0 : 1;
         if (rojo) P1OUT ^= BIT0;
         P9OUT ^= BIT7;
 
