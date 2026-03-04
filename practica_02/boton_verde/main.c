@@ -13,6 +13,7 @@ int main(void) {
 
     P1SEL0 &= ~BIT1;
     P1SEL1 &= ~BIT1;
+    P1REN |= BIT1;
     P1DIR &= ~BIT1;
     P1OUT |= BIT1;
 
