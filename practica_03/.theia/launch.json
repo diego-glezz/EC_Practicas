@@ -1,0 +1,41 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "led_rojo",
+            "type": "ccs-debug",
+            "request": "launch",
+            "projectInfo": {
+                "name": "led_rojo",
+                "resourceId": "/led_rojo"
+            }
+        },
+        {
+            "name": "led_rojo_interrupcion",
+            "type": "ccs-debug",
+            "request": "launch",
+            "projectInfo": {
+                "name": "led_rojo_interrupcion",
+                "resourceId": "/led_rojo_interrupcion"
+            }
+        },
+        {
+            "name": "led_rojo_timer_interrupcion",
+            "type": "ccs-debug",
+            "request": "launch",
+            "projectInfo": {
+                "name": "led_rojo_timer_interrupcion",
+                "resourceId": "/led_rojo_timer_interrupcion"
+            }
+        },
+        {
+            "name": "led_rojo_timer_interrupcion_switches",
+            "type": "ccs-debug",
+            "request": "launch",
+            "projectInfo": {
+                "name": "led_rojo_timer_interrupcion_switches",
+                "resourceId": "/led_rojo_timer_interrupcion_switches"
+            }
+        }
+    ]
+}
