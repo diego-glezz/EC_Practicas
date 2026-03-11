@@ -1,7 +1,7 @@
 ******************************************************************************
                   MSP430 Linker PC v21.6.1                     
 ******************************************************************************
->> Linked Wed Mar 11 00:30:08 2026
+>> Linked Wed Mar 11 09:19:12 2026
 
 OUTPUT FILE NAME:   <led_rojo_timer_interrupcion_switches.out>
 ENTRY POINT SYMBOL: "_c_int00_noargs_mpu"  address: 00004446
@@ -266,12 +266,12 @@ MODULE SUMMARY
     +--+----------------------------+------+---------+---------+
        Total:                       516    24        4      
                                                             
-    E:\ccs\ccs_base\msp430\lib\FR59xx\MSPMPU_INIT_LIB_CCS_msp430_large_code_restricted_data.lib
+    S:\software\electronica\ccstudio-20.2.0\ccs\ccs_base\msp430\lib\FR59xx\MSPMPU_INIT_LIB_CCS_msp430_large_code_restricted_data.lib
        mpu_init.o                   44     0         0      
     +--+----------------------------+------+---------+---------+
        Total:                       44     0         0      
                                                             
-    E:\ccs\tools\compiler\ti-cgt-msp430_21.6.1.LTS\lib\rts430x_lc_rd_eabi.lib
+    S:\software\electronica\ccstudio-20.2.0\ccs\tools\compiler\ti-cgt-msp430_21.6.1.LTS\lib\rts430x_lc_rd_eabi.lib
        copy_decompress_lzss.c.obj   118    0         0      
        autoinit.c.obj               84     0         0      
        boot.c.obj                   32     2         0      

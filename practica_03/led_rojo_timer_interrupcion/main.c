@@ -13,7 +13,7 @@ int main(void) {
     P1SEL1 &= ~BIT0;
     P1DIR |= BIT0;
     P1OUT &= ~BIT0;
-    
+
     // TA0CCR0 es el registro que guarda el "tope" de la cuenta. 
     // Le decimos que cuente hasta 40.000 como pide el ejercicio.
     TA0CCR0 = 40000; 

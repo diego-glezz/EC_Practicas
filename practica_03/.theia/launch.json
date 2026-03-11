@@ -36,6 +36,33 @@
                 "name": "led_rojo_timer_interrupcion_switches",
                 "resourceId": "/led_rojo_timer_interrupcion_switches"
             }
+        },
+        {
+            "name": "av_02_intercBotones",
+            "type": "ccs-debug",
+            "request": "launch",
+            "projectInfo": {
+                "name": "av_02_intercBotones",
+                "resourceId": "/av_02_intercBotones"
+            }
+        },
+        {
+            "name": "av_03_timer1_led",
+            "type": "ccs-debug",
+            "request": "launch",
+            "projectInfo": {
+                "name": "av_03_timer1_led",
+                "resourceId": "/av_03_timer1_led"
+            }
+        },
+        {
+            "name": "av_04_timer1_led1-3",
+            "type": "ccs-debug",
+            "request": "launch",
+            "projectInfo": {
+                "name": "av_04_timer1_led1-3",
+                "resourceId": "/av_04_timer1_led1-3"
+            }
         }
     ]
 }

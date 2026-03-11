@@ -4,7 +4,7 @@
 
 SHELL = cmd.exe
 
-CG_TOOL_ROOT := E:/ccs/tools/compiler/ti-cgt-msp430_21.6.1.LTS
+CG_TOOL_ROOT := S:/software/electronica/ccstudio-20.2.0/ccs/tools/compiler/ti-cgt-msp430_21.6.1.LTS
 
 GEN_OPTS__FLAG := 
 GEN_CMDS__FLAG := 
@@ -95,6 +95,9 @@ endif
 ifneq ($(strip $(S64_DEPS)),)
 -include $(S64_DEPS)
 endif
+ifneq ($(strip $(INO_DEPS)),)
+-include $(INO_DEPS)
+endif
 ifneq ($(strip $(CLA_DEPS)),)
 -include $(CLA_DEPS)
 endif
@@ -109,6 +112,9 @@ ifneq ($(strip $(C62_DEPS)),)
 endif
 ifneq ($(strip $(C67_DEPS)),)
 -include $(C67_DEPS)
+endif
+ifneq ($(strip $(PDE_DEPS)),)
+-include $(PDE_DEPS)
 endif
 ifneq ($(strip $(K_DEPS)),)
 -include $(K_DEPS)
@@ -166,14 +172,14 @@ all: $(OBJS) $(CMD_SRCS) $(GEN_CMDS)
 led_rojo_timer_interrupcion.out: $(OBJS) $(CMD_SRCS) $(GEN_CMDS)
 	@echo 'Building target: "$@"'
 	@echo 'Invoking: MSP430 Linker'
-	"E:/ccs/tools/compiler/ti-cgt-msp430_21.6.1.LTS/bin/cl430" -vmspx --data_model=restricted --use_hw_mpy=F5 --advice:power=all --advice:hw_config=all --define=__MSP430FR6989__ --define=_MPU_ENABLE -g --printf_support=minimal --diag_warning=225 --diag_wrap=off --display_error_number --silicon_errata=CPU21 --silicon_errata=CPU22 --silicon_errata=CPU40 -z -m"led_rojo_timer_interrupcion.map" --heap_size=160 --stack_size=160 --cinit_hold_wdt=on -i"E:/ccs/ccs_base/msp430/include" -i"E:/ccs/ccs_base/msp430/lib/5xx_6xx_FRxx" -i"E:/ccs/ccs_base/msp430/lib/FR59xx" -i"E:/ccs/tools/compiler/ti-cgt-msp430_21.6.1.LTS/lib" -i"E:/ccs/tools/compiler/ti-cgt-msp430_21.6.1.LTS/include" --priority --reread_libs --define=_MPU_ENABLE --diag_wrap=off --display_error_number --warn_sections --xml_link_info="led_rojo_timer_interrupcion_linkInfo.xml" --use_hw_mpy=F5 --rom_model -o "led_rojo_timer_interrupcion.out" $(ORDERED_OBJS)
+	"S:/software/electronica/ccstudio-20.2.0/ccs/tools/compiler/ti-cgt-msp430_21.6.1.LTS/bin/cl430" -vmspx --data_model=restricted --use_hw_mpy=F5 --advice:power=all --advice:hw_config=all --define=__MSP430FR6989__ --define=_MPU_ENABLE -g --printf_support=minimal --diag_warning=225 --diag_wrap=off --display_error_number --silicon_errata=CPU21 --silicon_errata=CPU22 --silicon_errata=CPU40 -z -m"led_rojo_timer_interrupcion.map" --heap_size=160 --stack_size=160 --cinit_hold_wdt=on -i"S:/software/electronica/ccstudio-20.2.0/ccs/ccs_base/msp430/include" -i"S:/software/electronica/ccstudio-20.2.0/ccs/ccs_base/msp430/lib/5xx_6xx_FRxx" -i"S:/software/electronica/ccstudio-20.2.0/ccs/ccs_base/msp430/lib/FR59xx" -i"S:/software/electronica/ccstudio-20.2.0/ccs/tools/compiler/ti-cgt-msp430_21.6.1.LTS/lib" -i"S:/software/electronica/ccstudio-20.2.0/ccs/tools/compiler/ti-cgt-msp430_21.6.1.LTS/include" --priority --reread_libs --define=_MPU_ENABLE --diag_wrap=off --display_error_number --warn_sections --xml_link_info="led_rojo_timer_interrupcion_linkInfo.xml" --use_hw_mpy=F5 --rom_model -o "led_rojo_timer_interrupcion.out" $(ORDERED_OBJS)
 	@echo 'Finished building target: "$@"'
 	@echo ' '
 
 led_rojo_timer_interrupcion.txt: $(EXE_OUTPUTS)
 	@echo 'Building secondary target: "$@"'
 	@echo 'Invoking: MSP430 Hex Utility'
-	"E:/ccs/tools/compiler/ti-cgt-msp430_21.6.1.LTS/bin/hex430" --memwidth=8 --romwidth=8 --diag_wrap=off --ti_txt -o "led_rojo_timer_interrupcion.txt" $(EXE_OUTPUTS__QUOTED)
+	"S:/software/electronica/ccstudio-20.2.0/ccs/tools/compiler/ti-cgt-msp430_21.6.1.LTS/bin/hex430" --memwidth=8 --romwidth=8 --diag_wrap=off --ti_txt -o "led_rojo_timer_interrupcion.txt" $(EXE_OUTPUTS__QUOTED)
 	@echo 'Finished building secondary target: "$@"'
 	@echo ' '
 
