@@ -1,69 +1,190 @@
-
 #include <msp430.h>
-const char alphabetBig[26][2] =
-{
-{0xEF, 0x00}, /* "A" LCD segments a+b+c+e+f+g+m */
-{0xF1, 0x50}, /* "B" */
-{0x9C, 0x00}, /* "C" */
-{0xF0, 0x50}, /* "D" */
-{0x9F, 0x00}, /* "E" */
-{0x8F, 0x00}, /* "F" */
-{0xBD, 0x00}, /* "G" */
-{0x6F, 0x00}, /* "H" */
-{0x90, 0x50}, /* "I" */
-{0x78, 0x00}, /* "J" */
-{0x0E, 0x22}, /* "K" */
-{0x1C, 0x00}, /* "L" */
-{0x6C, 0xA0}, /* "M" */
-{0x6C, 0x82}, /* "N" */
-{0xFC, 0x00}, /* "O" */
-{0xCF, 0x00}, /* "P" */
-{0xFC, 0x02}, /* "Q" */
-{0xCF, 0x02}, /* "R" */
-{0xB7, 0x00}, /* "S" */
-{0x80, 0x50}, /* "T" */
-{0x7C, 0x00}, /* "U" */
-{0x0C, 0x28}, /* "V" */
-{0x6C, 0x0A}, /* "W" */
-{0x00, 0xAA}, /* "X" */
-{0x00, 0xB0}, /* "Y" */
-{0x90, 0x28} /* "Z" */
+
+volatile int buffer[6] = {65, 65, 65, 65, 65, 65}; 
+volatile char letra = 'A';
+
+const char alphabetBig[26][2] = {
+    {0xEF, 0x00}, /* "A" */  {0xF1, 0x50}, /* "B" */  {0x9C, 0x00}, /* "C" */
+    {0xF0, 0x50}, /* "D" */  {0x9F, 0x00}, /* "E" */  {0x8F, 0x00}, /* "F" */
+    {0xBD, 0x00}, /* "G" */  {0x6F, 0x00}, /* "H" */  {0x90, 0x50}, /* "I" */
+    {0x78, 0x00}, /* "J" */  {0x0E, 0x22}, /* "K" */  {0x1C, 0x00}, /* "L" */
+    {0x6C, 0xA0}, /* "M" */  {0x6C, 0x82}, /* "N" */  {0xFC, 0x00}, /* "O" */
+    {0xCF, 0x00}, /* "P" */  {0xFC, 0x02}, /* "Q" */  {0xCF, 0x02}, /* "R" */
+    {0x87, 0x00}, /* "S" */  {0x80, 0x50}, /* "T" */  {0x7C, 0x00}, /* "U" */
+    {0x00, 0x28}, /* "V" */  {0x6C, 0x0A}, /* "W" */  {0x00, 0xAA}, /* "X" */
+    {0x00, 0xB0}, /* "Y" */  {0x90, 0x28}  /* "Z" */
 };
 
-void ShowBuffer(volatile unsigned int buffer[]) {
-LCDMEM[9] = alphabetBig[(buffer[5])-65][0];
-LCDMEM[10] = alphabetBig[(buffer[5])-65][1];
-LCDMEM[5] = alphabetBig[(buffer[4])-65][0];
-LCDMEM[6] = alphabetBig[(buffer[4])-65][1];
-LCDMEM[3] = alphabetBig[(buffer[3])-65][0];
-LCDMEM[4] = alphabetBig[(buffer[3])-65][1];
-LCDMEM[18] = alphabetBig[(buffer[2])-65][0];
-LCDMEM[19] = alphabetBig[(buffer[2])-65][1];
-LCDMEM[14] = alphabetBig[(buffer[1])-65][0];
-LCDMEM[15] = alphabetBig[(buffer[1])-65][1];
-LCDMEM[7] = alphabetBig[(buffer[0])-65][0];
-LCDMEM[8] = alphabetBig[(buffer[0])-65][1];
+void config_reloj_8MHz(void);
+void config_UART_9600(void);
+void Initialize_LCD(void);
+void config_ACLK_to_32KHz_crystal();
+void config_TimerA(void);
+void ShowBuffer(volatile int buffer[]);
+void ShiftBuffer(volatile int buffer[], int nueva_letra);
+
+int main(void) {
+    WDTCTL = WDTPW | WDTHOLD;
+    PM5CTL0 &= ~LOCKLPM5;
+
+    // Configuraciones iniciales
+    config_reloj_8MHz();
+    config_UART_9600();
+    config_ACLK_to_32KHz_crystal();
+    Initialize_LCD();
+    config_TimerA();
+
+    // Ahora habilitamos la interrupción de RECEPCIÓN (UCRXIE)
+    UCA1IE |= UCRXIE; 
+
+    // Dormimos la CPU y activamos las interrupciones globales
+    __bis_SR_register(LPM0_bits | GIE); 
+
+    return 0;
 }
+
+void ShiftBuffer(volatile int buffer[], int nueva_letra) {
+    buffer[5] = buffer[4];
+    buffer[4] = buffer[3];
+    buffer[3] = buffer[2];
+    buffer[2] = buffer[1];
+    buffer[1] = buffer[0];
+    buffer[0] = nueva_letra;
+}
+
+void ShowBuffer(volatile int buffer[]) {
+    LCDMEM[9] = alphabetBig[(buffer[0])-65][0];
+    LCDMEM[10] = alphabetBig[(buffer[0])-65][1];
+    
+    LCDMEM[5] = alphabetBig[(buffer[1])-65][0];
+    LCDMEM[6] = alphabetBig[(buffer[1])-65][1];
+    
+    LCDMEM[3] = alphabetBig[(buffer[2])-65][0];
+    LCDMEM[4] = alphabetBig[(buffer[2])-65][1];
+    
+    LCDMEM[18] = alphabetBig[(buffer[3])-65][0];
+    LCDMEM[19] = alphabetBig[(buffer[3])-65][1];
+    
+    LCDMEM[14] = alphabetBig[(buffer[4])-65][0];
+    LCDMEM[15] = alphabetBig[(buffer[4])-65][1];
+    
+    LCDMEM[7] = alphabetBig[(buffer[5])-65][0];
+    LCDMEM[8] = alphabetBig[(buffer[5])-65][1];
+}
+
+void config_reloj_8MHz(void) {
+    CSCTL0_H = CSKEY >> 8;                    
+    CSCTL1 = DCOFSEL_3 | DCORSEL;             
+    CSCTL2 = SELA__VLOCLK | SELS__DCOCLK | SELM__DCOCLK; 
+    CSCTL3 = DIVA__1 | DIVS__1 | DIVM__1;     
+    CSCTL0_H = 0;                             
+}
+
+void config_UART_9600(void) {
+    P3SEL0 |= (BIT4 | BIT5);                  
+    P3SEL1 &= ~(BIT4 | BIT5);                 
+
+    UCA1CTLW0 = UCSWRST;                      
+    UCA1CTLW0 |= UCSSEL__SMCLK;               
+    
+    UCA1BR0 = 52;                             
+    UCA1BR1 = 0x00;                           
+    UCA1MCTLW |= UCOS16 | UCBRF_1 | 0x4900;   
+
+    UCA1CTLW0 &= ~UCSWRST;                    
+}
+
+#pragma vector=TIMER0_A0_VECTOR
+__interrupt void TIMER0_A0_ISR(void) {
+    // Despertamos a la UART para que envíe un carácter
+    UCA1IE |= UCTXIE; 
+}
+
+
+#pragma vector=USCI_A1_VECTOR
+__interrupt void USCI_A1_ISR(void) {
+
+    char letra_recibida;
+    
+    // Comprobamos qué evento ha disparado la interrupción
+    switch(__even_in_range(UCA1IV, 0x08)) {
+        
+        case 0x00: break;
+        
+        // Se ejecuta cuando ha llegado un carácter completo desde el PC
+        case 0x02: 
+            
+            // 1. Leemos el dato del buzón. (Al leerlo, el flag se limpia solo) 
+            letra_recibida = UCA1RXBUF; 
+            
+            // 2. Filtramos para asegurarnos de que solo aceptamos letras MAYÚSCULAS
+            if (letra_recibida >= 'A' && letra_recibida <= 'Z') {
+                
+                // 3. Desplazamos las letras viejas y metemos la nueva
+                ShiftBuffer(buffer, letra_recibida);
+                
+                // 4. Actualizamos la pantalla LCD
+                ShowBuffer(buffer);
+            }
+
+            
+            break;
+            
+        case 0x04:
+
+            UCA1TXBUF = letra; // Enviamos la letra
+            letra++;
+            
+            if (letra > 'Z') letra = 'A';
+            
+            UCA1IE &= ~UCTXIE; // Apaga la transmision de la interrupcion del TimerA0 para que se vuelva a despertar
+            
+            break;
+            
+        case 0x06: break; // Start bit
+        case 0x08: break; // Transmisión completa
+        default: break;
+    }
+}
+
+
+void config_TimerA(void) {
+    TA0CCR0 = 15000; 
+    TA0CCTL0 = CCIE; // Habilitar interrupción de este temporizador
+    TA0CTL = TASSEL__ACLK | MC__UP | TACLR; // Fuente ACLK, Modo UP, Limpiar contador
+}
+
+
 void Initialize_LCD() {
-   PJSEL0 = BIT4 | BIT5;
-   LCDCPCTL0 = 0xFFFF;
-   LCDCPCTL1 = 0xFC3F;
-   LCDCPCTL2 = 0x0FFF;
+    PJSEL0 = BIT4 | BIT5; // For LFXT
+    // Initialize LCD segments 0 - 21; 26 - 43
+    LCDCPCTL0 = 0xFFFF;
+    LCDCPCTL1 = 0xFC3F;
+    LCDCPCTL2 = 0x0FFF;
+    // Configure LFXT 32kHz crystal
+    CSCTL0_H = CSKEY >> 8; // Unlock CS registers
+    CSCTL4 &= ~LFXTOFF; // Enable LFXT
+    
+    do {
+        CSCTL5 &= ~LFXTOFFG; // Clear LFXT fault flag
+        SFRIFG1 &= ~OFIFG;
+    } while (SFRIFG1 & OFIFG); // Test oscillator fault flag
+    
+    CSCTL0_H = 0; // Lock CS registers
+    // Initialize LCD_C
+    // ACLK, Divider = 1, Pre-divider = 16; 4-pin MUX
+    LCDCCTL0 = LCDDIV__1 | LCDPRE__16 | LCD4MUX | LCDLP;
+    // VLCD generated internally,
+    // V2-V4 generated internally, v5 to ground
+    // Set VLCD voltage to 2.60v
+    // Enable charge pump and select internal reference for it
+    LCDCVCTL = VLCD_1 | VLCDREF_0 | LCDCPEN;
+    LCDCCPCTL = LCDCPCLKSYNC; // Clock synchronization enabled
+    LCDCMEMCTL = LCDCLRM; // Clear LCD memory
+    //Turn LCD on
+    LCDCCTL0 |= LCDON;
 
-   CSCTL0_H = CSKEY >> 8;
-   CSCTL4 &= ~LFXTOFF;
-   do {
-       CSCTL5 &= ~LFXTOFFG;
-       SFRIFG1 &= ~OFIFG;
-   } while (SFRIFG1 & OFIFG);
-   CSCTL0_H = 0;
-
-   LCDCCTL0 = LCDDIV__1 | LCDPRE__16 | LCD4MUX | LCDLP;
-   LCDCVCTL = VLCD_1 | VLCDREF_0 | LCDCPEN;
-   LCDCCPCTL = LCDCPCLKSYNC;
-   LCDCMEMCTL = LCDCLRM;
-
-   LCDCCTL0 |= LCDON;
+    return;
 }
 
 void config_ACLK_to_32KHz_crystal() {
@@ -75,82 +196,4 @@ void config_ACLK_to_32KHz_crystal() {
        SFRIFG1 &= ~OFIFG;
    } while ((CSCTL5 & LFXTOFFG) != 0);
    CSCTL0_H = 0;
-}
-
-volatile char letter = 'A';
-volatile unsigned char tx_open = 0;
-#define BUFFER_SIZE 6  // Tamaño del buffer, según ShowBuffer()
-volatile unsigned int rxBuffer[BUFFER_SIZE];  // Buffer para almacenar los datos convertidos
-volatile  int index = BUFFER_SIZE-1;     // Índice del buffer
-int main(void)
-{
-   WDTCTL = WDTPW | WDTHOLD;    // Stop watchdog timer
-
-   // 1. DESBLOQUEAR PINES (Crucial en MSP430FR)
-   PM5CTL0 &= ~LOCKLPM5;
-
-   // Configuración de Reloj (8MHz)
-   CSCTL0_H = CSKEY >> 8;
-   CSCTL1 = DCOFSEL_3 | DCORSEL;
-   CSCTL2 = SELA__VLOCLK | SELS__DCOCLK | SELM__DCOCLK;
-   CSCTL3 = DIVA__1 | DIVS__1 | DIVM__1;
-   CSCTL0_H = 0;
-
-   // Configurar pines UART (P3.4 = TX, P3.5 = RX)
-   P3SEL0 |= BIT4 | BIT5;
-   P3SEL1 &= ~(BIT4 | BIT5);
-
-   //Configurar pantalla
-      config_ACLK_to_32KHz_crystal();
-      Initialize_LCD();
-
-   // Configure USCI_A1 para UART
-   UCA1CTLW0 = UCSWRST;                    // Reset
-   UCA1CTLW0 |= UCSSEL__SMCLK;             // SMCLK
-   UCA1BR0 = 52;                           // 9600 Baudios
-   UCA1BR1 = 0x00;
-   UCA1MCTLW |= UCOS16 | UCBRF_1 | 0x4900;
-   UCA1CTLW0 &= ~UCSWRST;                  // Liberar Reset
-
-   // Solo habilitamos RXIE. El TX lo manejaremos por flag o en la ISR
-   UCA1IE |= UCRXIE | UCTXIE;
-
-   // Configurar Timer A0
-   TA0CCR0 = 50000;
-   TA0CCTL0 = CCIE;
-   TA0CTL = TASSEL_2 | MC_1 | ID_0;        // SMCLK, Up mode
-
-   __bis_SR_register(LPM0_bits | GIE);     // Dormir y habilitar interrupciones
-   __no_operation();
-}
-
-// Interrupción UART
-#pragma vector=USCI_A1_VECTOR
-__interrupt void USCI_A1_ISR(void) {
-   if (UCA1IFG & UCRXIFG) {  // Si hay un dato recibido
-          char received = UCA1RXBUF; // Leer dato
-          if(received >= 'A' & received <= 'Z'){
-              rxBuffer[index] = received;
-              ShowBuffer(rxBuffer);
-              index--;
-              if (index < 0) {  // Si el buffer está lleno
-                              index = BUFFER_SIZE-1; // Reiniciar índice
-            }
-          }
-      }
-
-      if (UCA1IFG & UCTXIFG) {  // Si el buffer de transmisión está listo
-         tx_open = 1;
-      }
-}
-
-// ISR del Timer
-#pragma vector=TIMER0_A0_VECTOR
-__interrupt void Timer_A0_ISR(void) {
-   if(tx_open == 1){
-       UCA1TXBUF = letter;            // Esto limpia automáticamente UCTXIFG
-       if(letter >= 'Z') letter = 'A';
-       else letter++;
-       tx_open = 0;
-   }
 }

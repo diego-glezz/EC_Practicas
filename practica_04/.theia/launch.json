@@ -27,6 +27,15 @@
                 "name": "ejercicio_2",
                 "resourceId": "/ejercicio_2"
             }
+        },
+        {
+            "name": "av_04_led",
+            "type": "ccs-debug",
+            "request": "launch",
+            "projectInfo": {
+                "name": "av_04_led",
+                "resourceId": "/av_04_led"
+            }
         }
     ]
 }

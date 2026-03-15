@@ -33,48 +33,46 @@ void config_UART_9600(void) {
     P3SEL0 |= BIT4 | BIT5;
     P3SEL1 &= ~(BIT4 | BIT5);
 
-    // 2. Mantener la UART en estado de reset por software para configurarla [cite: 978, 985]
+    // 2. Mantener la UART en estado de reset por software para configurarla
     UCA1CTLW0 = UCSWRST; 
     
-    // 3. Seleccionar SMCLK (8 MHz) como fuente de reloj [cite: 979, 986]
+    // 3. Seleccionar SMCLK (8 MHz) como fuente de reloj
     // Nota: Por defecto (0 en los campos correspondientes) ya tiene 8 bits de datos, 1 bit stop y sin paridad 
     UCA1CTLW0 |= UCSSEL__SMCLK; 
 
-    // 4. Configurar la tasa de baudios a 9600 [cite: 987-988]
+    // 4. Configurar la tasa de baudios a 9600
     UCA1BR0 = 52; 
     UCA1BR1 = 0x00; 
     
-    // 5. Configurar la modulación del canal UART [cite: 989-990]
+    // 5. Configurar la modulación del canal UART
     UCA1MCTLW |= UCOS16 | UCBRF_1 | 0x4900; 
     
-    // 6. Liberar el reset por software para que la UART comience a funcionar [cite: 991]
+    // 6. Liberar el reset por software para que la UART comience a funcionar
     UCA1CTLW0 &= ~UCSWRST; 
 }
 
 #pragma vector=USCI_A1_VECTOR
 __interrupt void USCI_A1_ISR(void) {
-    // Leer el vector de interrupción para determinar la causa [cite: 928-946]
+    // Leer el vector de interrupción para determinar la causa
     switch(__even_in_range(UCA1IV, 0x08)) {
-        case 0x00: break; // Sin interrupciones pendientes [cite: 930-931]
+        case 0x00: break; // Sin interrupciones pendientes
         
-        case 0x02: break; // Interrupción de recepción (UCRXIFG) - No utilizada aquí [cite: 932-934]
+        case 0x02: break; // Interrupción de recepción (UCRXIFG) - No utilizada aquí
         
-        case 0x04: // Interrupción de transmisión (UCTXIFG) [cite: 935-937]
-            // El buffer de transmisión está vacío y listo para enviar un nuevo carácter [cite: 704]
-            UCA1TXBUF = letra; // Enviar la letra actual al buffer de transmisión [cite: 918]
+        case 0x04: // Interrupción de transmisión (UCTXIFG)
+            // El buffer de transmisión está vacío y listo para enviar un nuevo carácter
+            UCA1TXBUF = letra; // Enviar la letra actual al buffer de transmisión
             
             letra++; // Incrementar al siguiente carácter ASCII
             
             // Si pasamos de la 'Z', reiniciar a la 'A' e insertar saltos de línea para el terminal
-            if (letra > 'Z' + 1) {
+            if (letra > 'Z') {
                 letra = 'A';
-                UCA1TXBUF = '\r'; // Retorno de carro
-                UCA1TXBUF = '\n'; // Salto de línea
             }
             break;
             
-        case 0x06: break; // Bit de inicio (UCSTTIFG) [cite: 939-941]
-        case 0x08: break; // Transmisión completa (UCTXCPTIFG) [cite: 942-944]
+        case 0x06: break; // Bit de inicio (UCSTTIFG)
+        case 0x08: break; // Transmisión completa (UCTXCPTIFG)
         default: break;
     }
 }

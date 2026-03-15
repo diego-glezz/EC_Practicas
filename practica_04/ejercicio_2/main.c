@@ -15,7 +15,7 @@ const char alphabetBig[26][2] = {
 };
 
 void config_reloj_8MHz(void);
-void config_UART(void);
+void config_UART_9600(void);
 void Initialize_LCD(void);
 void config_ACLK_to_32KHz_crystal();
 void ShowBuffer(volatile int buffer[]);
@@ -27,14 +27,11 @@ int main(void) {
 
     // Configuraciones iniciales
     config_reloj_8MHz();
-    config_UART();
+    config_UART_9600();
     config_ACLK_to_32KHz_crystal();
     Initialize_LCD();
-    
-    // Mostramos el estado inicial del buffer (AAAAAA)
-    ShowBuffer(buffer);
 
-    // Ahora habilitamos la interrupción de RECEPCIÓN (UCRXIE) [cite: 68-70, 457]
+    // Ahora habilitamos la interrupción de RECEPCIÓN (UCRXIE)
     UCA1IE |= UCRXIE; 
 
     // Dormimos la CPU y activamos las interrupciones globales
@@ -53,14 +50,14 @@ void ShiftBuffer(volatile int buffer[], int nueva_letra) {
 }
 
 void ShowBuffer(volatile int buffer[]) {
-    LCDMEM[9]  = alphabetBig[(buffer[0])-65][0];
+    LCDMEM[9] = alphabetBig[(buffer[0])-65][0];
     LCDMEM[10] = alphabetBig[(buffer[0])-65][1];
     
-    LCDMEM[5]  = alphabetBig[(buffer[1])-65][0];
-    LCDMEM[6]  = alphabetBig[(buffer[1])-65][1];
+    LCDMEM[5] = alphabetBig[(buffer[1])-65][0];
+    LCDMEM[6] = alphabetBig[(buffer[1])-65][1];
     
-    LCDMEM[3]  = alphabetBig[(buffer[2])-65][0];
-    LCDMEM[4]  = alphabetBig[(buffer[2])-65][1];
+    LCDMEM[3] = alphabetBig[(buffer[2])-65][0];
+    LCDMEM[4] = alphabetBig[(buffer[2])-65][1];
     
     LCDMEM[18] = alphabetBig[(buffer[3])-65][0];
     LCDMEM[19] = alphabetBig[(buffer[3])-65][1];
@@ -68,8 +65,8 @@ void ShowBuffer(volatile int buffer[]) {
     LCDMEM[14] = alphabetBig[(buffer[4])-65][0];
     LCDMEM[15] = alphabetBig[(buffer[4])-65][1];
     
-    LCDMEM[7]  = alphabetBig[(buffer[5])-65][0];
-    LCDMEM[8]  = alphabetBig[(buffer[5])-65][1];
+    LCDMEM[7] = alphabetBig[(buffer[5])-65][0];
+    LCDMEM[8] = alphabetBig[(buffer[5])-65][1];
 }
 
 void config_reloj_8MHz(void) {
@@ -80,7 +77,7 @@ void config_reloj_8MHz(void) {
     CSCTL0_H = 0;                             
 }
 
-void config_UART(void) {
+void config_UART_9600(void) {
     P3SEL0 |= (BIT4 | BIT5);                  
     P3SEL1 &= ~(BIT4 | BIT5);                 
 
@@ -99,19 +96,18 @@ __interrupt void USCI_A1_ISR(void) {
 
     char letra_recibida;
     
-    // Comprobamos qué evento ha disparado la interrupción [cite: 698-716]
+    // Comprobamos qué evento ha disparado la interrupción
     switch(__even_in_range(UCA1IV, 0x08)) {
         
         case 0x00: break;
         
-        // --- CASO 0x02: INTERRUPCIÓN DE RECEPCIÓN (UCRXIFG) ---
-        // Se ejecuta cuando ha llegado un carácter completo desde el PC [cite: 74, 485, 702-704]
+        // Se ejecuta cuando ha llegado un carácter completo desde el PC
         case 0x02: 
             
             // 1. Leemos el dato del buzón. (Al leerlo, el flag se limpia solo) 
             letra_recibida = UCA1RXBUF; 
             
-            // 2. Filtramos para asegurarnos de que solo aceptamos letras MAYÚSCULAS [cite: 109]
+            // 2. Filtramos para asegurarnos de que solo aceptamos letras MAYÚSCULAS
             if (letra_recibida >= 'A' && letra_recibida <= 'Z') {
                 
                 // 3. Desplazamos las letras viejas y metemos la nueva

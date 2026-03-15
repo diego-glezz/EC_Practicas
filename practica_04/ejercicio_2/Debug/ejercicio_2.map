@@ -1,7 +1,7 @@
 ******************************************************************************
                   MSP430 Linker PC v21.6.1                     
 ******************************************************************************
->> Linked Sun Mar 15 15:18:40 2026
+>> Linked Sun Mar 15 15:33:57 2026
 
 OUTPUT FILE NAME:   <ejercicio_2.out>
 ENTRY POINT SYMBOL: "_c_int00_noargs_mpu"  address: 0000442c
@@ -79,7 +79,7 @@ MEMORY CONFIGURATION
   INT53                 0000fffa   00000002  00000002  00000000  RWIX
   INT54                 0000fffc   00000002  00000002  00000000  RWIX
   RESET                 0000fffe   00000002  00000002  00000000  RWIX
-  FRAM2                 00010000   00013ff8  0000033a  00013cbe  RWIX
+  FRAM2                 00010000   00013ff8  00000332  00013cc6  RWIX
 
 
 SECTION ALLOCATION MAP
@@ -240,31 +240,31 @@ SYSNMI     0    0000fffc    00000002
 .const     0    00004454    00000034     
                   00004454    00000034     main.obj (.const:alphabetBig)
 
-.text      0    00010000    0000033a     
+.text      0    00010000    00000332     
                   00010000    00000102     main.obj (.text:ShowBuffer)
                   00010102    00000076     rts430x_lc_rd_eabi.lib : copy_decompress_lzss.c.obj (.text:decompress:lzss:__TI_decompress_lzss)
                   00010178    00000054                            : autoinit.c.obj (.text:__TI_auto_init_nobinit_nopinit_hold_wdt:__TI_auto_init_nobinit_nopinit_hold_wdt)
                   000101cc    0000004e     main.obj (.text:Initialize_LCD)
-                  0001021a    00000032     main.obj (.text:main)
-                  0001024c    0000002c     MSPMPU_INIT_LIB_CCS_msp430_large_code_restricted_data.lib : mpu_init.o (.text:__mpu_init)
-                  00010278    0000002c     main.obj (.text:config_UART)
-                  000102a4    00000026     main.obj (.text:config_ACLK_to_32KHz_crystal)
-                  000102ca    00000022     main.obj (.text:ShiftBuffer)
-                  000102ec    0000001c     main.obj (.text:config_reloj_8MHz)
-                  00010308    00000014     rts430x_lc_rd_eabi.lib : memcpy.c.obj (.text:memcpy)
-                  0001031c    00000012                            : copy_decompress_none.c.obj (.text:decompress:none:__TI_decompress_none)
-                  0001032e    00000006                            : exit.c.obj (.text:abort)
-                  00010334    00000004                            : pre_init.c.obj (.text:_system_pre_init)
-                  00010338    00000002                            : startup.c.obj (.text:_system_post_cinit)
+                  0001021a    0000002c     MSPMPU_INIT_LIB_CCS_msp430_large_code_restricted_data.lib : mpu_init.o (.text:__mpu_init)
+                  00010246    0000002c     main.obj (.text:config_UART_9600)
+                  00010272    0000002a     main.obj (.text:main)
+                  0001029c    00000026     main.obj (.text:config_ACLK_to_32KHz_crystal)
+                  000102c2    00000022     main.obj (.text:ShiftBuffer)
+                  000102e4    0000001c     main.obj (.text:config_reloj_8MHz)
+                  00010300    00000014     rts430x_lc_rd_eabi.lib : memcpy.c.obj (.text:memcpy)
+                  00010314    00000012                            : copy_decompress_none.c.obj (.text:decompress:none:__TI_decompress_none)
+                  00010326    00000006                            : exit.c.obj (.text:abort)
+                  0001032c    00000004                            : pre_init.c.obj (.text:_system_pre_init)
+                  00010330    00000002                            : startup.c.obj (.text:_system_post_cinit)
 
 MODULE SUMMARY
 
        Module                       code   ro data   rw data
        ------                       ----   -------   -------
     .\
-       main.obj                     574    54        12     
+       main.obj                     566    54        12     
     +--+----------------------------+------+---------+---------+
-       Total:                       574    54        12     
+       Total:                       566    54        12     
                                                             
     E:\ccs\ccs_base\msp430\lib\FR59xx\MSPMPU_INIT_LIB_CCS_msp430_large_code_restricted_data.lib
        mpu_init.o                   44     0         0      
@@ -314,7 +314,7 @@ MODULE SUMMARY
        Stack:                       0      0         160    
        Linker Generated:            0      24        0      
     +--+----------------------------+------+---------+---------+
-       Grand Total:                 910    134       172    
+       Grand Total:                 902    134       172    
 
 
 LINKER GENERATED COPY TABLES
@@ -591,7 +591,7 @@ address   name
 000009ce  AESAXIN_L                              
 000004be  BCD2BIN                                
 000004bc  BIN2BCD                                
-0001032e  C$$EXIT                                
+00010326  C$$EXIT                                
 0000043e  CAPTIO0CTL                             
 0000043f  CAPTIO0CTL_H                           
 0000043e  CAPTIO0CTL_L                           
@@ -1491,7 +1491,7 @@ address   name
 0000019a  SYSUNIV                                
 0000019b  SYSUNIV_H                              
 0000019a  SYSUNIV_L                              
-000102ca  ShiftBuffer                            
+000102c2  ShiftBuffer                            
 00010000  ShowBuffer                             
 00000352  TA0CCR0                                
 00000354  TA0CCR1                                
@@ -1725,7 +1725,7 @@ address   name
 0000444c  __TI_ISR_TRAP                          
 00010178  __TI_auto_init_nobinit_nopinit_hold_wdt
 00010102  __TI_decompress_lzss                   
-0001031c  __TI_decompress_none                   
+00010314  __TI_decompress_none                   
 0000ffc6  __TI_int27                             
 0000ffc8  __TI_int28                             
 0000ffca  __TI_int29                             
@@ -1759,24 +1759,24 @@ ffffffff  __TI_prof_data_size
 ffffffff  __TI_prof_data_start                   
 ffffffff  __c_args__                             
 00000001  __mpu_enable                           
-0001024c  __mpu_init                             
+0001021a  __mpu_init                             
 0000442c  _c_int00_noargs_mpu                    
 0000fffe  _reset_vector                          
 00002360  _stack                                 
-00010338  _system_post_cinit                     
-00010334  _system_pre_init                       
-0001032e  abort                                  
+00010330  _system_post_cinit                     
+0001032c  _system_pre_init                       
+00010326  abort                                  
 00004454  alphabetBig                            
 00001c00  buffer                                 
-000102a4  config_ACLK_to_32KHz_crystal           
-00010278  config_UART                            
-000102ec  config_reloj_8MHz                      
+0001029c  config_ACLK_to_32KHz_crystal           
+00010246  config_UART_9600                       
+000102e4  config_reloj_8MHz                      
 00004400  fram_ipe_end                           
 00004400  fram_ipe_start                         
 00004400  fram_rw_start                          
 00004400  fram_rx_start                          
-0001021a  main                                   
-00010308  memcpy                                 
+00010272  main                                   
+00010300  memcpy                                 
 0000a501  mpu_ctl0_value                         
 00001513  mpu_sam_value                          
 00000440  mpu_segment_border1                    
@@ -3218,18 +3218,18 @@ address   name
 00010102  __TI_decompress_lzss                   
 00010178  __TI_auto_init_nobinit_nopinit_hold_wdt
 000101cc  Initialize_LCD                         
-0001021a  main                                   
-0001024c  __mpu_init                             
-00010278  config_UART                            
-000102a4  config_ACLK_to_32KHz_crystal           
-000102ca  ShiftBuffer                            
-000102ec  config_reloj_8MHz                      
-00010308  memcpy                                 
-0001031c  __TI_decompress_none                   
-0001032e  C$$EXIT                                
-0001032e  abort                                  
-00010334  _system_pre_init                       
-00010338  _system_post_cinit                     
+0001021a  __mpu_init                             
+00010246  config_UART_9600                       
+00010272  main                                   
+0001029c  config_ACLK_to_32KHz_crystal           
+000102c2  ShiftBuffer                            
+000102e4  config_reloj_8MHz                      
+00010300  memcpy                                 
+00010314  __TI_decompress_none                   
+00010326  C$$EXIT                                
+00010326  abort                                  
+0001032c  _system_pre_init                       
+00010330  _system_post_cinit                     
 ffffffff  __TI_pprof_out_hndl                    
 ffffffff  __TI_prof_data_size                    
 ffffffff  __TI_prof_data_start                   
