@@ -1,0 +1,32 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "ejercicio_1",
+            "type": "ccs-debug",
+            "request": "launch",
+            "projectInfo": {
+                "name": "ejercicio_1",
+                "resourceId": "/ejercicio_1"
+            }
+        },
+        {
+            "name": "ejercicio_3",
+            "type": "ccs-debug",
+            "request": "launch",
+            "projectInfo": {
+                "name": "ejercicio_3",
+                "resourceId": "/ejercicio_3"
+            }
+        },
+        {
+            "name": "ejercicio_2",
+            "type": "ccs-debug",
+            "request": "launch",
+            "projectInfo": {
+                "name": "ejercicio_2",
+                "resourceId": "/ejercicio_2"
+            }
+        }
+    ]
+}
