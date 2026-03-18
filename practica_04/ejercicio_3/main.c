@@ -70,7 +70,7 @@ void ShiftBuffer(volatile int buffer[], int nueva_letra) {
     buffer[0] = nueva_letra;
 }
 
-void ShowBuffer(int buffer[]) {
+void ShowBuffer(volatile int buffer[]) {
     LCDMEM[9] = alphabetBig[(buffer[0])-65][0];
     LCDMEM[10] = alphabetBig[(buffer[0])-65][1];
     LCDMEM[5] = alphabetBig[(buffer[1])-65][0];

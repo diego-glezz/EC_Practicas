@@ -54,10 +54,10 @@ int main(void) {
     P1OUT |= BIT0;
 
 
-    // Ahora habilitamos la interrupción de RECEPCIÓN (UCRXIE)
+    // Habilita la interrupción de recepcion
     UCA1IE |= UCRXIE; 
 
-    // Dormimos la CPU y activamos las interrupciones globales
+    // Activamos las interrupciones
     __bis_SR_register(LPM0_bits | GIE); 
 
     return 0;
@@ -86,9 +86,15 @@ void config_UART_9600(void) {
     UCA1CTLW0 &= ~UCSWRST;                    
 }
 
+void config_TimerA(void) {
+    TA0CCR0 = 15000; 
+    TA0CCTL0 = CCIE; // Habilita la interrupcion de este temporizador
+    TA0CTL = TASSEL__ACLK | MC__UP | TACLR; // Fuente ACLK, Modo UP, Limpiar contador
+}
+
+
 #pragma vector=TIMER0_A0_VECTOR
 __interrupt void TIMER0_A0_ISR(void) {
-    // Despertamos a la UART para que envíe un carácter
     if (stateLED == 1) P1OUT ^= BIT0;
 }
 
@@ -98,18 +104,15 @@ __interrupt void USCI_A1_ISR(void) {
 
     char letra_recibida;
     
-    // Comprobamos qué evento ha disparado la interrupción
     switch(__even_in_range(UCA1IV, 0x08)) {
         
         case 0x00: break;
         
-        // Se ejecuta cuando ha llegado un carácter completo desde el PC
+        // Cuando llega un caracter desde la consola
         case 0x02: 
             
-            // 1. Leemos el dato del buzón. (Al leerlo, el flag se limpia solo) 
             letra_recibida = UCA1RXBUF; 
             
-            // 2. Filtramos para asegurarnos de que solo aceptamos letras MAYÚSCULAS
             if (letra_recibida == 'A') {
                 P1OUT &= ~BIT0;
                 stateLED = 0;
@@ -117,19 +120,11 @@ __interrupt void USCI_A1_ISR(void) {
             else if (letra_recibida == 'E') {
                 stateLED = 1;
             }
-
-            
             break;
             
         case 0x04: break; 
-        case 0x06: break; // Start bit
-        case 0x08: break; // Transmisión completa
+        case 0x06: break;
+        case 0x08: break;
         default: break;
     }
-}
-
-void config_TimerA(void) {
-    TA0CCR0 = 15000; 
-    TA0CCTL0 = CCIE; // Habilitar interrupción de este temporizador
-    TA0CTL = TASSEL__ACLK | MC__UP | TACLR; // Fuente ACLK, Modo UP, Limpiar contador
 }
