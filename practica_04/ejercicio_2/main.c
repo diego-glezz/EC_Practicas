@@ -2,16 +2,34 @@
 
 volatile int buffer[6] = {65, 65, 65, 65, 65, 65}; 
 
-const char alphabetBig[26][2] = {
-    {0xEF, 0x00}, /* "A" */  {0xF1, 0x50}, /* "B" */  {0x9C, 0x00}, /* "C" */
-    {0xF0, 0x50}, /* "D" */  {0x9F, 0x00}, /* "E" */  {0x8F, 0x00}, /* "F" */
-    {0xBD, 0x00}, /* "G" */  {0x6F, 0x00}, /* "H" */  {0x90, 0x50}, /* "I" */
-    {0x78, 0x00}, /* "J" */  {0x0E, 0x22}, /* "K" */  {0x1C, 0x00}, /* "L" */
-    {0x6C, 0xA0}, /* "M" */  {0x6C, 0x82}, /* "N" */  {0xFC, 0x00}, /* "O" */
-    {0xCF, 0x00}, /* "P" */  {0xFC, 0x02}, /* "Q" */  {0xCF, 0x02}, /* "R" */
-    {0x87, 0x00}, /* "S" */  {0x80, 0x50}, /* "T" */  {0x7C, 0x00}, /* "U" */
-    {0x00, 0x28}, /* "V" */  {0x6C, 0x0A}, /* "W" */  {0x00, 0xAA}, /* "X" */
-    {0x00, 0xB0}, /* "Y" */  {0x90, 0x28}  /* "Z" */
+const char alphabetBig[26][2] =
+{
+ {0xEF, 0x00}, /* "A" LCD segments a+b+c+e+f+g+m */
+ {0xF1, 0x50}, /* "B" */
+ {0x9C, 0x00}, /* "C" */
+ {0xF0, 0x50}, /* "D" */
+ {0x9F, 0x00}, /* "E" */
+ {0x8F, 0x00}, /* "F" */
+ {0xBD, 0x00}, /* "G" */
+ {0x6F, 0x00}, /* "H" */
+ {0x90, 0x50}, /* "I" */
+ {0x78, 0x00}, /* "J" */
+ {0x0E, 0x22}, /* "K" */
+ {0x1C, 0x00}, /* "L" */
+ {0x6C, 0xA0}, /* "M" */
+ {0x6C, 0x82}, /* "N" */
+ {0xFC, 0x00}, /* "O" */
+ {0xCF, 0x00}, /* "P" */
+ {0xFC, 0x02}, /* "Q" */
+ {0xCF, 0x02}, /* "R" */
+ {0xB7, 0x00}, /* "S" */
+ {0x80, 0x50}, /* "T" */
+ {0x7C, 0x00}, /* "U" */
+ {0x0C, 0x28}, /* "V" */
+ {0x6C, 0x0A}, /* "W" */
+ {0x00, 0xAA}, /* "X" */
+ {0x00, 0xB0}, /* "Y" */
+ {0x90, 0x28} /* "Z" */
 };
 
 void config_reloj_8MHz(void);
@@ -49,22 +67,17 @@ void ShiftBuffer(volatile int buffer[], int nueva_letra) {
     buffer[0] = nueva_letra;
 }
 
-void ShowBuffer(volatile int buffer[]) {
+void ShowBuffer(int buffer[]) {
     LCDMEM[9] = alphabetBig[(buffer[0])-65][0];
     LCDMEM[10] = alphabetBig[(buffer[0])-65][1];
-    
     LCDMEM[5] = alphabetBig[(buffer[1])-65][0];
     LCDMEM[6] = alphabetBig[(buffer[1])-65][1];
-    
     LCDMEM[3] = alphabetBig[(buffer[2])-65][0];
     LCDMEM[4] = alphabetBig[(buffer[2])-65][1];
-    
     LCDMEM[18] = alphabetBig[(buffer[3])-65][0];
     LCDMEM[19] = alphabetBig[(buffer[3])-65][1];
-    
     LCDMEM[14] = alphabetBig[(buffer[4])-65][0];
     LCDMEM[15] = alphabetBig[(buffer[4])-65][1];
-    
     LCDMEM[7] = alphabetBig[(buffer[5])-65][0];
     LCDMEM[8] = alphabetBig[(buffer[5])-65][1];
 }
