@@ -53,7 +53,7 @@ int main(void) {
     config_TimerA();
 
     // Ahora habilitamos la interrupción de RECEPCIÓN (UCRXIE)
-    UCA1IE |= UCRXIE; 
+    UCA1IE |= UCRXIE;
 
     // Dormimos la CPU y activamos las interrupciones globales
     __bis_SR_register(LPM0_bits | GIE); 
