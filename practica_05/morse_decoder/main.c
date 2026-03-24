@@ -2,10 +2,17 @@
 #include <stdlib.h>
 #include <string.h>
 
-#define DOT_TIME_LIMIT 9830
+#define DOT_TIME_LIMIT 20000
 #define LETTER_END_TIME (2 * DOT_TIME_LIMIT)
 #define SPACE_ADD_TIME (3 * DOT_TIME_LIMIT)
 #define CHAR_COUNT 37
+
+#define pos1 9   /* Digit A1 begins at S18 */
+#define pos2 5   /* Digit A2 begins at S10 */
+#define pos3 3   /* Digit A3 begins at S6  */
+#define pos4 18  /* Digit A4 begins at S36 */
+#define pos5 14  /* Digit A5 begins at S28 */
+#define pos6 7   /* Digit A6 begins at S14 */
 
 const char* morse[CHAR_COUNT] = 
 {
@@ -88,7 +95,7 @@ const char toChar[CHAR_COUNT] = {
     '9'
 };
 
-volatile int buffer[6] = {37, 37, 37, 37, 37, 37};
+volatile int buffer[6] = {0, 1, 2, 3, 4, 5};
 
 const char alphabetBig[40][2] =
 {
@@ -130,12 +137,13 @@ const char alphabetBig[40][2] =
     {0xFF, 0x00}, /* 35: "8" */
     {0xF7, 0x00}, /* 36: "9" */
     {0x00, 0x00}, /* 37: " " (Espacio) */
-    {0x00, 0x50}, /* 38: "." (Punto - segmento DP) */
-    {0x02, 0x00}  /* 39: "-" (Raya - segmento G) */
+    {0x00, 0x50}, /* 38: "|" (Punto) */
+    {0x02, 0x00}  /* 39: "-" (Raya) */
 };
 
 void init_button_config(void);
 void init_LCD();
+void config_ACLK_to_32KHz_crystal();
 void init_timer0(void);
 void init_timer1(int limit);
 
@@ -147,7 +155,9 @@ void clean_string(char** str);
 
 void update_LCD(void);
 void show_buffer(volatile int buffer[]);
-void shift_buffer(volatile int buffer[], int nueva_letra);
+//void shift_buffer(volatile int buffer[], int nueva_letra);
+//void displayScrollText(char *msg);
+//void showChar(char c, int position);
 
 int get_char_index(char c);
 
@@ -164,12 +174,22 @@ int main(void) {
     UCA1IE |= UCRXIE;
 
     init_button_config();
-    __bis_SR_register(LPM0_bits |GIE);
+    
     init_LCD();
+    //config_ACLK_to_32KHz_crystal();
 
+    show_buffer(buffer);
+
+    curr_string = (char*)malloc(sizeof(char));
+    (curr_string)[0] = '\0';
+
+    curr_morse = (char*)malloc(sizeof(char));
+    (curr_morse)[0] = '\0';
+
+    __bis_SR_register(LPM0_bits |GIE);
     while (1) {}
 }
-
+/*
 #pragma vector=TIMER1_A0_VECTOR
 __interrupt void TIMER1_A0_ISR(void) {
     switch (state) {
@@ -183,7 +203,8 @@ __interrupt void TIMER1_A0_ISR(void) {
     }
     init_timer1(SPACE_ADD_TIME);
 }
-/* SIN ESPACIOS INFINITOS
+*/
+// SIN ESPACIOS INFINITOS
 
 #pragma vector=TIMER1_A0_VECTOR
 __interrupt void TIMER1_A0_ISR(void) {
@@ -201,7 +222,7 @@ __interrupt void TIMER1_A0_ISR(void) {
 }
 
 
-*/
+
 
 #pragma vector=PORT1_VECTOR
 __interrupt void ISR_Puerto1(void) {
@@ -280,6 +301,17 @@ void init_LCD() {
     return;
 }
 
+void config_ACLK_to_32KHz_crystal() {
+   PJSEL1 &= ~BIT4;
+   PJSEL0 |= BIT4;
+   CSCTL0 = CSKEY;
+   do {
+       CSCTL5 &= ~LFXTOFFG;
+       SFRIFG1 &= ~OFIFG;
+   } while ((CSCTL5 & LFXTOFFG) != 0);
+   CSCTL0_H = 0;
+}
+
 void init_timer0() {
     TA0CTL = TASSEL__ACLK | TACLR;
     TA0CTL |= MC__CONTINUOUS;
@@ -306,6 +338,7 @@ void add_letter() {
     }
     
     clean_string((char**)&curr_morse);
+    update_LCD();
 }
 
 void add_char(char** str, char c) {
@@ -394,7 +427,7 @@ void show_buffer(volatile int buffer[]) {
     LCDMEM[7]  = alphabetBig[buffer[0]][0];
     LCDMEM[8]  = alphabetBig[buffer[0]][1];
 }
-
+/*
 void shift_buffer(volatile int buffer[], int nueva_letra) {
     buffer[5] = buffer[4];
     buffer[4] = buffer[3];
@@ -404,6 +437,69 @@ void shift_buffer(volatile int buffer[], int nueva_letra) {
     buffer[0] = nueva_letra;
 }
 
+volatile unsigned char mode;
+
+void displayScrollText(char *msg)
+{
+    int length = strlen(msg);
+    int oldmode = mode;
+    int i;
+    int s = 5;
+    char buffer[6] = "      ";
+    for (i=0; i<length+7; i++)
+    {
+        if (mode != oldmode)
+            break;
+        int t;
+        for (t=0; t<6; t++)
+            buffer[t] = ' ';
+        int j;
+        for (j=0; j<length; j++)
+        {
+            if (((s+j) >= 0) && ((s+j) < 6))
+                buffer[s+j] = msg[j];
+        }
+        s--;
+
+        showChar(buffer[0], pos1);
+        showChar(buffer[1], pos2);
+        showChar(buffer[2], pos3);
+        showChar(buffer[3], pos4);
+        showChar(buffer[4], pos5);
+        showChar(buffer[5], pos6);
+
+        __delay_cycles(200000);
+    }
+}
+
+void showChar(char c, int position)
+{
+    if (c == ' ')
+    {
+        // Display space
+        LCDMEM[position] = 0;
+        LCDMEM[position+1] = 0;
+    }
+    else if (c >= '0' && c <= '9')
+    {
+        // Display digit
+        LCDMEM[position] = digit[c-48][0];
+        LCDMEM[position+1] = digit[c-48][1];
+    }
+    else if (c >= 'A' && c <= 'Z')
+    {
+        // Display alphabet
+        LCDMEM[position] = alphabetBig[c-65][0];
+        LCDMEM[position+1] = alphabetBig[c-65][1];
+    }
+    else
+    {
+        // Turn all segments on if character is not a space, digit, or uppercase letter
+        LCDMEM[position] = 0xFF;
+        LCDMEM[position+1] = 0xFF;
+    }
+}
+*/
 int get_char_index(char c) {
     if (c >= 'A' && c <= 'Z') return c - 'A';
     if (c >= '0' && c <= '9') return c - '0' + 27;

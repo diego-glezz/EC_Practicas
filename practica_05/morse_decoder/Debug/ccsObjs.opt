@@ -1,6 +1,3 @@
-"./StopWatchMode.obj"
-"./TempSensorMode.obj"
-"./hal_LCD.obj"
 "./main.obj"
 "./driverlib/MSP430FR5xx_6xx/adc12_b.obj"
 "./driverlib/MSP430FR5xx_6xx/aes256.obj"

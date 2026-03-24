@@ -2,16 +2,6 @@
    {
       "directory" : "C:/Users/Diego/Documents/GitHub/EC_Practicas/practica_05/morse_decoder/Debug",
       "command"   : "clang++ -I\"C:/ti/ccs2040/ccs/ccs_base/msp430/include\" -I\"C:/Users/Diego/Documents/GitHub/EC_Practicas/practica_05/morse_decoder\" -I\"C:/Users/Diego/Documents/GitHub/EC_Practicas/practica_05/morse_decoder/driverlib/MSP430FR5xx_6xx\" -I\"C:/ti/ccs2040/ccs/tools/compiler/ti-cgt-msp430_21.6.1.LTS/include\" -D__MSP430FR6989__ -D_MPU_ENABLE -xc",
-      "file"      : "C:/Users/Diego/Documents/GitHub/EC_Practicas/practica_05/morse_decoder/StopWatchMode.c"
-   },
-   {
-      "directory" : "C:/Users/Diego/Documents/GitHub/EC_Practicas/practica_05/morse_decoder/Debug",
-      "command"   : "clang++ -I\"C:/ti/ccs2040/ccs/ccs_base/msp430/include\" -I\"C:/Users/Diego/Documents/GitHub/EC_Practicas/practica_05/morse_decoder\" -I\"C:/Users/Diego/Documents/GitHub/EC_Practicas/practica_05/morse_decoder/driverlib/MSP430FR5xx_6xx\" -I\"C:/ti/ccs2040/ccs/tools/compiler/ti-cgt-msp430_21.6.1.LTS/include\" -D__MSP430FR6989__ -D_MPU_ENABLE -xc",
-      "file"      : "C:/Users/Diego/Documents/GitHub/EC_Practicas/practica_05/morse_decoder/TempSensorMode.c"
-   },
-   {
-      "directory" : "C:/Users/Diego/Documents/GitHub/EC_Practicas/practica_05/morse_decoder/Debug",
-      "command"   : "clang++ -I\"C:/ti/ccs2040/ccs/ccs_base/msp430/include\" -I\"C:/Users/Diego/Documents/GitHub/EC_Practicas/practica_05/morse_decoder\" -I\"C:/Users/Diego/Documents/GitHub/EC_Practicas/practica_05/morse_decoder/driverlib/MSP430FR5xx_6xx\" -I\"C:/ti/ccs2040/ccs/tools/compiler/ti-cgt-msp430_21.6.1.LTS/include\" -D__MSP430FR6989__ -D_MPU_ENABLE -xc",
       "file"      : "C:/Users/Diego/Documents/GitHub/EC_Practicas/practica_05/morse_decoder/driverlib/MSP430FR5xx_6xx/adc12_b.c"
    },
    {
@@ -148,11 +138,6 @@
       "directory" : "C:/Users/Diego/Documents/GitHub/EC_Practicas/practica_05/morse_decoder/Debug",
       "command"   : "clang++ -I\"C:/ti/ccs2040/ccs/ccs_base/msp430/include\" -I\"C:/Users/Diego/Documents/GitHub/EC_Practicas/practica_05/morse_decoder\" -I\"C:/Users/Diego/Documents/GitHub/EC_Practicas/practica_05/morse_decoder/driverlib/MSP430FR5xx_6xx\" -I\"C:/ti/ccs2040/ccs/tools/compiler/ti-cgt-msp430_21.6.1.LTS/include\" -D__MSP430FR6989__ -D_MPU_ENABLE -xc",
       "file"      : "C:/Users/Diego/Documents/GitHub/EC_Practicas/practica_05/morse_decoder/driverlib/MSP430FR5xx_6xx/wdt_a.c"
-   },
-   {
-      "directory" : "C:/Users/Diego/Documents/GitHub/EC_Practicas/practica_05/morse_decoder/Debug",
-      "command"   : "clang++ -I\"C:/ti/ccs2040/ccs/ccs_base/msp430/include\" -I\"C:/Users/Diego/Documents/GitHub/EC_Practicas/practica_05/morse_decoder\" -I\"C:/Users/Diego/Documents/GitHub/EC_Practicas/practica_05/morse_decoder/driverlib/MSP430FR5xx_6xx\" -I\"C:/ti/ccs2040/ccs/tools/compiler/ti-cgt-msp430_21.6.1.LTS/include\" -D__MSP430FR6989__ -D_MPU_ENABLE -xc",
-      "file"      : "C:/Users/Diego/Documents/GitHub/EC_Practicas/practica_05/morse_decoder/hal_LCD.c"
    },
    {
       "directory" : "C:/Users/Diego/Documents/GitHub/EC_Practicas/practica_05/morse_decoder/Debug",
