@@ -1,16 +1,41 @@
 {
-  // Use IntelliSense to learn about possible attributes.
-  // Hover to view descriptions of existing attributes.
-  "version": "0.2.0",
-  "configurations": [
-    {
-      "name": "morse_decoder",
-      "type": "ccs-debug",
-      "request": "launch",
-      "projectInfo": {
-        "name": "morse_decoder",
-        "resourceId": "/morse_decoder"
-      }
-    }
-  ]
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "morse_decoder",
+            "type": "ccs-debug",
+            "request": "launch",
+            "projectInfo": {
+                "name": "morse_decoder",
+                "resourceId": "/morse_decoder"
+            }
+        },
+        {
+            "name": "morse_decoder2",
+            "type": "ccs-debug",
+            "request": "launch",
+            "projectInfo": {
+                "name": "morse_decoder2",
+                "resourceId": "/morse_decoder2"
+            }
+        },
+        {
+            "name": "morse_decoder_original",
+            "type": "ccs-debug",
+            "request": "launch",
+            "projectInfo": {
+                "name": "morse_decoder_original",
+                "resourceId": "/morse_decoder_original"
+            }
+        },
+        {
+            "name": "morse_decoder_original - copia",
+            "type": "ccs-debug",
+            "request": "launch",
+            "projectInfo": {
+                "name": "morse_decoder_original - copia",
+                "resourceId": "/morse_decoder_original - copia"
+            }
+        }
+    ]
 }

@@ -2,10 +2,15 @@
 #include <stdlib.h>
 #include <string.h>
 
-#define DOT_TIME_LIMIT 20000
-#define LETTER_END_TIME (2 * DOT_TIME_LIMIT)
-#define SPACE_ADD_TIME (3 * DOT_TIME_LIMIT)
+#define DIT 1200
+#define DOT_TIME_LIMIT (2* DIT)
+#define LETTER_END_TIME (3 * DIT)
+#define SPACE_ADD_TIME (7 * DIT)
 #define CHAR_COUNT 37
+#define LETTER_COUNT 27
+#define DIGIT_COUNT 10
+
+#define INSTRUCTIONS_SIZE (27 + CHAR_COUNT * 10 + CHAR_COUNT / 4)
 
 #define pos1 9   /* Digit A1 begins at S18 */
 #define pos2 5   /* Digit A2 begins at S10 */
@@ -55,7 +60,53 @@ const char* morse[CHAR_COUNT] =
     "----."   // 9
 };
 
-const char toChar[CHAR_COUNT] = {
+const char* morse_letters[LETTER_COUNT] =
+{
+    ".-",     // A
+    "-...",   // B
+    "-.-.",   // C
+    "-..",    // D
+    ".",      // E
+    "..-.",   // F
+    "--.",    // G
+    "....",   // H
+    "..",     // I
+    ".---",   // J
+    "-.-",    // K
+    ".-..",   // L
+    "--",     // M
+    "-.",     // N
+    "--.--",  // Ñ
+    "---",    // O
+    ".--.",   // P
+    "--.-",   // Q
+    ".-.",    // R
+    "...",    // S
+    "-",      // T
+    "..-",    // U
+    "...-",   // V
+    ".--",    // W
+    "-..-",   // X
+    "-.--",   // Y
+    "--.."   // Z
+};
+
+const char* morse_digits[DIGIT_COUNT] =
+{
+    "-----",  // 0
+    ".----",  // 1
+    "..---",  // 2
+    "...--",  // 3
+    "....-",  // 4
+    ".....",  // 5
+    "-....",  // 6
+    "--...",  // 7
+    "---..",  // 8
+    "----."   // 9
+};
+
+const char toChar[CHAR_COUNT] =
+{
     'A',
     'B',
     'C',
@@ -83,6 +134,51 @@ const char toChar[CHAR_COUNT] = {
     'X',
     'Y',
     'Z',
+    '0',
+    '1',
+    '2',
+    '3',
+    '4',
+    '5',
+    '6',
+    '7',
+    '8',
+    '9'
+};
+
+const char letterToChar[LETTER_COUNT] =
+{
+    'A',
+    'B',
+    'C',
+    'D',
+    'E',
+    'F',
+    'G',
+    'H',
+    'I',
+    'J',
+    'K',
+    'L',
+    'M',
+    'N',
+    'Ñ',
+    'O',
+    'P',
+    'Q',
+    'R',
+    'S',
+    'T',
+    'U',
+    'V',
+    'W',
+    'X',
+    'Y',
+    'Z'
+};
+
+const char digitToChar[DIGIT_COUNT] =
+{
     '0',
     '1',
     '2',
@@ -141,29 +237,35 @@ const char alphabetBig[40][2] =
     {0x02, 0x00}  /* 39: "-" (Raya) */
 };
 
-void init_button_config(void);
+void init_button_config();
 void init_LCD();
+void init_leds();
 void config_ACLK_to_32KHz_crystal();
-void init_timer0(void);
+void config_reloj_8MHz(void);
+void config_UART_9600(void);
+void init_timer0();
 void init_timer1(int limit);
 
-void add_letter(void);
+void add_letter();
 void add_char(char** str, char c);
 void delete_char(char** str);
-void append_char(char** str, char c);
+void append_char(char* str, char c);
 void clean_string(char** str);
 
-void update_LCD(void);
+void update_LCD();
 void show_buffer(volatile int buffer[]);
 //void shift_buffer(volatile int buffer[], int nueva_letra);
 //void displayScrollText(char *msg);
 //void showChar(char c, int position);
 
 int get_char_index(char c);
+void UART_print_char(char c);
+void UART_print_string(char* str);
+char* console_instructions();
 
 
 char* curr_string = NULL;
-char* curr_morse = NULL;
+char curr_morse[6] = "\0";
 
 volatile int state = 0; //0 -> Waiting to start | 1-> Waiting for letter | 2 -> Mid letter
 
@@ -171,11 +273,13 @@ int main(void) {
     WDTCTL = WDTPW | WDTHOLD;
     PM5CTL0 &= ~LOCKLPM5;
 
-    UCA1IE |= UCRXIE;
-
     init_button_config();
     
     init_LCD();
+    init_leds();
+
+    config_reloj_8MHz();
+    config_UART_9600();
     //config_ACLK_to_32KHz_crystal();
 
     show_buffer(buffer);
@@ -183,8 +287,7 @@ int main(void) {
     curr_string = (char*)malloc(sizeof(char));
     (curr_string)[0] = '\0';
 
-    curr_morse = (char*)malloc(sizeof(char));
-    (curr_morse)[0] = '\0';
+    UART_print_string(console_instructions());
 
     __bis_SR_register(LPM0_bits |GIE);
     while (1) {}
@@ -210,7 +313,7 @@ __interrupt void TIMER1_A0_ISR(void) {
 __interrupt void TIMER1_A0_ISR(void) {
     switch (state) {
         case 1: //No letter in a while so a space is added
-            add_char((char**)&curr_string, ' ');
+            add_letter();
             TA1CTL &= ~MC_3;
             break;
         case 2: //No input in a while so the letter ended
@@ -220,9 +323,6 @@ __interrupt void TIMER1_A0_ISR(void) {
             break;
     }
 }
-
-
-
 
 #pragma vector=PORT1_VECTOR
 __interrupt void ISR_Puerto1(void) {
@@ -240,9 +340,10 @@ __interrupt void ISR_Puerto1(void) {
             unsigned int time = TA0R;
 
             char toAdd = (time <= DOT_TIME_LIMIT) ? '.' : '-';
-
-            add_char((char**)&curr_morse, toAdd);
-
+            if (strlen(curr_morse) < 5) {
+                add_char((char**)&curr_morse, toAdd);
+            }
+            
             P1IES |= BIT1; // Cambia a flanco de bajada
 
             init_timer1(LETTER_END_TIME);
@@ -301,6 +402,18 @@ void init_LCD() {
     return;
 }
 
+void init_leds() {
+    P1SEL0 &= ~BIT0;
+    P1SEL1 &= ~BIT0;
+    P1DIR |= BIT0;
+    P1OUT &= ~BIT0;
+
+    P9SEL0 &= ~BIT7;
+    P9SEL1 &= ~BIT7;
+    P9DIR |= BIT7;
+    P9OUT &= ~BIT7;
+}
+
 void config_ACLK_to_32KHz_crystal() {
    PJSEL1 &= ~BIT4;
    PJSEL0 |= BIT4;
@@ -310,6 +423,30 @@ void config_ACLK_to_32KHz_crystal() {
        SFRIFG1 &= ~OFIFG;
    } while ((CSCTL5 & LFXTOFFG) != 0);
    CSCTL0_H = 0;
+}
+
+void config_reloj_8MHz(void) {
+    CSCTL0_H = CSKEY >> 8;                    
+    CSCTL1 = DCOFSEL_3 | DCORSEL;             
+    CSCTL2 = SELA__VLOCLK | SELS__DCOCLK | SELM__DCOCLK; 
+    CSCTL3 = DIVA__1 | DIVS__1 | DIVM__1;     
+    CSCTL0_H = 0;                             
+}
+
+void config_UART_9600(void) {
+    P3SEL0 |= (BIT4 | BIT5);                  
+    P3SEL1 &= ~(BIT4 | BIT5);                 
+
+    UCA1CTLW0 = UCSWRST;                      
+    UCA1CTLW0 |= UCSSEL__SMCLK;               
+    
+    UCA1BR0 = 52;                             
+    UCA1BR1 = 0x00;                           
+    UCA1MCTLW |= UCOS16 | UCBRF_1 | 0x4900;   
+
+    UCA1CTLW0 &= ~UCSWRST;
+
+    UCA1IE &= ~(UCRXIE | UCTXIE);
 }
 
 void init_timer0() {
@@ -327,16 +464,41 @@ void init_timer1(int limit) {
 void add_letter() {
     if (curr_morse == NULL) return;
 
-    char letter = '\0';
+    char c = '\0';
+    
+    if (strlen(curr_morse) == 0) c = ' ';
+    
     int i;
+    /*
     for (i = CHAR_COUNT - 1; i >= 0; i--) {
         if (strcmp((char*)curr_morse, morse[i]) == 0) {
-            letter = toChar[i];
-            append_char((char**)&curr_string, letter);
+            c = toChar[i];
+            append_char((char**)&curr_string, c);
             break;
         }
     }
-    
+    */
+    for (i = LETTER_COUNT - 1; i >= 0 && c == '\0'; i--) {
+        if (strcmp((char*)curr_morse, morse_letters[i]) == 0) {
+            c = letterToChar[i];
+            break;
+        }
+    }
+    for (i = DIGIT_COUNT - 1; i >= 0 && c == '\0'; i--) {
+        if (strcmp((char*)curr_morse, morse_digits[i]) == 0) {
+            c = digitToChar[i];
+            
+            break;
+        }
+    }
+
+    if (c == '\0') {
+        P1OUT |= BIT0;
+    }
+    else {
+        append_char((char**)&curr_string, c);
+        P1OUT &= ~BIT0;
+    }
     clean_string((char**)&curr_morse);
     update_LCD();
 }
@@ -361,6 +523,20 @@ void delete_char(char** str) {
     update_LCD();
 }
 
+void append_char(char* str, char c) {
+    unsigned int len = strlen(curr_morse);
+    
+    // Si hay menos de 5 caracteres, añadimos el nuevo y cerramos con nulo
+    if (len < 5) {
+        curr_morse[len] = c;
+        curr_morse[len + 1] = '\0';
+        update_LCD();
+    }
+}
+
+
+
+/*
 void append_char(char** str, char c) {
     if (*str == NULL) {
         *str = (char*)malloc(2 * sizeof(char));
@@ -381,6 +557,7 @@ void append_char(char** str, char c) {
 
     update_LCD();
 }
+*/
 
 void clean_string(char** str) {
     if (*str != NULL) {
@@ -507,4 +684,81 @@ int get_char_index(char c) {
     if (c == '.') return 38;
     if (c == '-') return 39;
     return 37; // Espacio por defecto
+}
+
+void UART_print_char(char c) {
+    while (!(UCA1IFG & UCTXIFG)); 
+    
+    UCA1TXBUF = c;
+}
+
+void UART_print_string(char* str) {
+    int i;
+    for (i = 0; str[i] != '\0'; i++) {
+        UART_print_char(str[i]);
+    }
+}
+
+char* console_instructions() {
+    static char instructions[INSTRUCTIONS_SIZE];
+    
+    strcpy(instructions, "--- DICCIONARIO MORSE ---\r\n");
+    
+    unsigned int i;
+    /*
+    for (i = 0; i < CHAR_COUNT; i++) {
+        char morseStr[11];
+        morseStr[10] = '\0';
+        morseStr[0] = toChar[i];
+        morseStr[1] = ':';
+        morseStr[2] = ' ';
+        morseStr[3] = '\0';
+
+        strcat(morseStr, morse[i]);
+        while (strlen(morseStr) < 10) strcat(morseStr, " ");
+
+        strcat(instructions, morseStr);
+        if (i % 5 == 4 || toChar[i] == 'Z') strcat(instructions, "\r\n");
+    }
+    if (CHAR_COUNT % 5 != 0) {
+        strcat(instructions, "\r\n");
+    }
+    */
+    for (i = 0; i < LETTER_COUNT; i++) {
+        char morseStr[11];
+        morseStr[10] = '\0';
+        morseStr[0] = letterToChar[i];
+        morseStr[1] = ':';
+        morseStr[2] = ' ';
+        morseStr[3] = '\0';
+
+        strcat(morseStr, morse_letters[i]);
+        while (strlen(morseStr) < 10) strcat(morseStr, " ");
+
+        strcat(instructions, morseStr);
+        if (i % 5 == 4 || toChar[i] == 'Z') strcat(instructions, "\r\n");
+    }
+    if (LETTER_COUNT % 5 != 0) {
+        strcat(instructions, "\r\n");
+    }
+    
+    for (i = 0; i < DIGIT_COUNT; i++) {
+        char morseStr[11];
+        morseStr[10] = '\0';
+        morseStr[0] = digitToChar[i];
+        morseStr[1] = ':';
+        morseStr[2] = ' ';
+        morseStr[3] = '\0';
+
+        strcat(morseStr, morse_digits[i]);
+        while (strlen(morseStr) < 10) strcat(morseStr, " ");
+
+        strcat(instructions, morseStr);
+        if (i % 5 == 4 || toChar[i] == 'Z') strcat(instructions, "\r\n");
+    }
+    if (DIGIT_COUNT % 5 != 0) {
+        strcat(instructions, "\r\n");
+    }
+
+    return instructions;
 }
